@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "3f3513f4-e62e-46d0-9431-fa4b32cd0656",
+		"name": "UNESCO Sites",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8616878"
+	},
+	"item": [
+		{
+			"name": "groupByDanger",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4111/groupByDanger",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4111",
+					"path": [
+						"groupByDanger"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getShortDescription",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4111/getShortDescription?name=Hatra",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4111",
+					"path": [
+						"getShortDescription"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Hatra"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getByInscriptionRange",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4111/getByInscriptionRange?startRange=1970&endRange=1990",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4111",
+					"path": [
+						"getByInscriptionRange"
+					],
+					"query": [
+						{
+							"key": "startRange",
+							"value": "1970"
+						},
+						{
+							"key": "endRange",
+							"value": "1990"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCountrySites",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4111/getCountrySites?name=France",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4111",
+					"path": [
+						"getCountrySites"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "France"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "geoFindByName",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4111/geoFindByName?name=France",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4111",
+					"path": [
+						"geoFindByName"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "France"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "geoFindByCoordinates",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4111/geoFindByCoordinates?latitude=51.21709661403662&longitude=6.7782883744862374",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4111",
+					"path": [
+						"geoFindByCoordinates"
+					],
+					"query": [
+						{
+							"key": "latitude",
+							"value": "51.21709661403662"
+						},
+						{
+							"key": "longitude",
+							"value": "6.7782883744862374"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
