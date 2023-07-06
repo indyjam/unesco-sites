@@ -2,7 +2,7 @@
 
 ## Control variables
 
-Replace entries in `.env` file (MongDB and GeApify credentials mainly).
+Rename `template.env` file into`.env` and replace the entries with your settings(MongDB and GeApify credentials mainly).
 If you set the flag `FORCE_RECREATE_COLLECTION="true"`, running `populateMongoDb.js` over an existing collection, will clear the existing collection and recreate it instead of giving error.
 
 ## How to populate the database
