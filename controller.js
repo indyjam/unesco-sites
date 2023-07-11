@@ -24,12 +24,11 @@ class UnescoSitesConnection {
   /* create and returns collections */
   async createCollection(recreate = false) {
     if (recreate) {
-      try {
-        this.database.collection(this.collectionName).drop();
-        console.info("Found Collection, delete & recreate");
-      } catch (err) {
-        console.info("Collection not present, creating it!");
-      }
+      await this.database
+        .collection(this.collectionName)
+        .drop()
+        .then(() => console.log("Found Collection, delete & recreate"))
+        .catch((err) => console.log("Collection not present, creating it!"));
     }
     this.collectionInstance = await this.database.createCollection(
       this.collectionName
@@ -111,6 +110,6 @@ class UnescoSitesConnection {
   }
 }
 
-// returning the already constructed object: 
+// returning the already constructed object:
 // we need one and its life shall span for the entire servers' life
 module.exports = new UnescoSitesConnection();
