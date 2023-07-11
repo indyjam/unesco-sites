@@ -22,7 +22,7 @@ class UnescoSitesConnection {
   }
 
   /* create and returns collections */
-  async createCollection(recreate = false) {
+  async createCollection(recreate = false, schema = null) {
     if (recreate) {
       await this.database
         .collection(this.collectionName)
@@ -30,9 +30,16 @@ class UnescoSitesConnection {
         .then(() => console.log("Found Collection, delete & recreate"))
         .catch((err) => console.log("Collection not present, creating it!"));
     }
+    let options = schema
+      ? {
+          validator: { $jsonSchema: schema },
+        }
+      : {};
     this.collectionInstance = await this.database.createCollection(
-      this.collectionName
+      this.collectionName,
+      options
     );
+    console.log("Collection created!");
     return this.collectionInstance;
   }
 
@@ -84,7 +91,7 @@ class UnescoSitesConnection {
   async getByInscriptionRange(startRange, endRange) {
     let collection = await this.collection();
     let query = {
-      date_inscribed: { $gt: `${startRange}`, $lt: `${endRange}` },
+      date_inscribed: { $gt: startRange, $lt: endRange },
     };
     const options = {
       sort: { date_inscribed: 1 },

@@ -75,8 +75,8 @@ app.get("/getShortDescription", async (req, res, next) => {
 /* get list of UNESCO sites for a specific date_inscribed range */
 app.get("/getByInscriptionRange", async (req, res, next) => {
   // TODO: put a control on the types!
-  let startRange = req.query.startRange;
-  let endRange = req.query.endRange;
+  let startRange = Number.parseInt(req.query.startRange);
+  let endRange = Number.parseInt(req.query.endRange);
   if (!startRange) {
     next("startRange parameter is mandatory!");
   } else if (!endRange) {
