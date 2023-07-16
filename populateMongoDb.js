@@ -1,18 +1,58 @@
 "use strict";
 
-// const { parse } = require("csv-parse");
-const { parse } = require("csv-parse/sync");
+const { parse } = require("csv-parse");
+// const { parse } = require("csv-parse/sync");
 const connection = require("./controller");
 const schema = require("./schema");
 const fs = require("fs");
+const { finished } = require("stream/promises");
 const MongoType_Double = require("mongodb").Double;
 
-async function parseCsv(filePath, collection) {
+async function parseCsvBare(filePath, collection) {
   // Parse the CSV content: small file, keeping the readability according to the docs
   const content = fs.readFileSync(filePath);
   return parse(content, { bom: true, columns: true });
 }
 
+async function parseCsv(filePath, collection) {
+  let headers = null;
+  const records = [];
+  const parser = fs.createReadStream(filePath).pipe(
+    parse({
+      // CSV options if any
+    })
+  );
+  parser.on("readable", function () {
+    let record;
+    while ((record = parser.read()) !== null) {
+      if (!headers) {
+        headers = record.map((v) => {
+          return v.toLowerCase().replace(" ", "_");
+        });
+      } else {
+        let row = record.reduce((acc, element, index) => {
+          let key = headers[index];
+
+          if (["latitude", "longitude"].includes(key)) {
+            if (!acc.coordinates) acc["coordinates"] = {};
+            acc.coordinates[key] = parseValue(
+              element,
+              schema.properties.coordinates.properties[key].bsonType
+            );
+            return acc;
+          }
+          return {
+            ...acc,
+            [key]: parseValue(element, schema.properties[key].bsonType),
+          };
+        }, {});
+        records.push(row);
+      }
+    }
+  });
+  await finished(parser);
+  return records;
+}
 
 function parseValue(val, accepted_types) {
   let type_map = {
@@ -53,14 +93,15 @@ async function build() {
 
     // this option prevents additional documents from being inserted if one fails
     const options = { ordered: true };
-    let validatedRows = results.map((row) =>
-      Object.fromEntries(
-        Object.entries(row).map(([k, v]) => {
-          return [k, parseValue(v, schema.properties[k].bsonType)];
-        })
-      )
-    );
-    const result = await collection.insertMany(validatedRows, options);
+
+    /// I used this to validate the single line insertion
+    // console.log(results[0]);
+    // const result = await collection
+    //   .insertOne(results[0], options)
+    //   .catch((err) => console.log(JSON.stringify(err, null, 2)));
+    // console.log(result);
+
+    const result = await collection.insertMany(results, options);
     console.log(`${result.insertedCount} documents were inserted`);
   } finally {
     // Ensures that the client will close when you finish/error

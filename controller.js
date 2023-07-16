@@ -3,6 +3,11 @@
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
+// TODO
+// - add indexes
+// - add search index
+// - add geostuff
+
 /******************************************************************************\
 |* This class contains everything is needed to access the database/collection *|
 |* Far from being perfect, is an hint of how I would approach things normally *|
@@ -63,7 +68,7 @@ class UnescoSitesConnection {
     let collection = await this.collection();
     const pipeline = [
       //   { $group: { _id: "$danger" } },
-      { $group: { _id: "$danger", sites: { $push: "$Name" } } },
+      { $group: { _id: "$danger", sites: { $push: "$name" } } },
     ];
     const aggCursor = collection.aggregate(pipeline);
     let res = [];
@@ -77,7 +82,7 @@ class UnescoSitesConnection {
   /* get short_description related to given name */
   async getShortDescription(name) {
     let collection = await this.collection();
-    let query = { Name: name };
+    let query = { name: name };
     const options = {
       projection: { _id: 0, short_description: 1 },
     };
@@ -106,7 +111,7 @@ class UnescoSitesConnection {
   async getCountrySites(countryName) {
     let collection = await this.collection();
     let query = {
-      "Country name": countryName,
+      "country_name": countryName,
     };
     const options = {
       //   projection: { _id: 0, short_description: 1 },
