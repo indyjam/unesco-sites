@@ -52,7 +52,7 @@ const server = app.listen(
 );
 
 /* get list of UNESCO sites grouped by danger */
-app.get("/groupByDanger", async (req, res) => {
+app.get("/groupByDanger", async (req, res, next) => {
   try {
     let value = await connection.groupByDanger();
     res.send(value);
@@ -164,6 +164,17 @@ app.get("/health", async (req, res) => {
   } catch (err) {
     next(err);
   }
+});
+
+// Endpoint not found (404)
+app.use((req, res) => {
+  res.status(404).json({ error: "Endpoint not found" });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Internal server error" });
 });
 
 // Closing gracefully

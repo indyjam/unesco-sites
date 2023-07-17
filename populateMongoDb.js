@@ -103,6 +103,14 @@ async function build() {
 
     const result = await collection.insertMany(results, options);
     console.log(`${result.insertedCount} documents were inserted`);
+
+    let iresult = await collection.createIndex({ name: 1 });
+    console.log(`Index created: ${iresult}`);
+    iresult = await collection.createIndex({ date_inscribed: 1 });
+    console.log(`Index created: ${iresult}`);
+    iresult = await collection.createIndex({ country_name: 1 });
+    console.log(`Index created: ${iresult}`);
+
   } finally {
     // Ensures that the client will close when you finish/error
     await connection.close();

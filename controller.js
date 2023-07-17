@@ -20,7 +20,10 @@ class UnescoSitesConnection {
     const cluster = process.env.MONGODB_CLUSTER;
     const database = process.env.MONGODB_DATABASE;
     let uri = `mongodb+srv://${username}:${password}@${cluster}/?retryWrites=true&w=majority`;
-    this.client = new MongoClient(uri);
+    this.client = new MongoClient(uri, {
+      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 5000,
+    });
     this.database = this.client.db(database);
     this.collectionName = process.env.MONGODB_COLLECTION;
     this.collectionInstance = null;
@@ -67,8 +70,8 @@ class UnescoSitesConnection {
   async groupByDanger() {
     let collection = await this.collection();
     const pipeline = [
-      //   { $group: { _id: "$danger" } },
-      { $group: { _id: "$danger", sites: { $push: "$name" } } },
+        // { $group: { _id: "$danger" } },
+        { $group: { _id: "$danger", sites: { $push: "$name" } } },
     ];
     const aggCursor = collection.aggregate(pipeline);
     let res = [];
@@ -111,7 +114,7 @@ class UnescoSitesConnection {
   async getCountrySites(countryName) {
     let collection = await this.collection();
     let query = {
-      "country_name": countryName,
+      country_name: countryName,
     };
     const options = {
       //   projection: { _id: 0, short_description: 1 },
