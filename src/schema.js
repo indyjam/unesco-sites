@@ -5,7 +5,7 @@ const schema = {
     "date_inscribed",
     "short_description",
     "danger",
-    "coordinates",
+    "location",
     "category_long",
     "category_short",
     "country_name",
@@ -19,12 +19,31 @@ const schema = {
     date_inscribed: { bsonType: "int" },
     danger: { bsonType: "bool" },
     date_end: { bsonType: ["int", "null"] },
-    coordinates: {
+    location: {
       bsonType: "object",
-      required: ["longitude", "latitude"],
+      required: ["type", "coordinates"],
       properties: {
-        longitude: { bsonType: "double" },
-        latitude: { bsonType: "double" },
+        type: {
+          bsonType: "string",
+          enum: ["Point"],
+        },
+        coordinates: {
+          bsonType: ["array"],
+          minItems: 2,
+          maxItems: 2,
+          items: [
+            {
+              bsonType: "double",
+              minimum: -180,
+              maximum: 180,
+            },
+            {
+              bsonType: "double",
+              minimum: -90,
+              maximum: 90,
+            },
+          ],
+        },
       },
     },
     area_hectares: { bsonType: ["int", "null"] },

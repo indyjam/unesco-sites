@@ -2,8 +2,8 @@
 
 const { parse } = require("csv-parse");
 // const { parse } = require("csv-parse/sync");
-const connection = require("./controller");
-const schema = require("./schema");
+const connection = require("../src/controller");
+const schema = require("../src/schema");
 const fs = require("fs");
 const { finished } = require("stream/promises");
 const MongoType_Double = require("mongodb").Double;
@@ -34,11 +34,14 @@ async function parseCsv(filePath, collection) {
           let key = headers[index];
 
           if (["latitude", "longitude"].includes(key)) {
-            if (!acc.coordinates) acc["coordinates"] = {};
-            acc.coordinates[key] = parseValue(
-              element,
-              schema.properties.coordinates.properties[key].bsonType
-            );
+            if (!acc.location) {
+              acc["location"] = {
+                type: "Point",
+                coordinates: [0, 0],
+              };
+            }
+            let idx = key == "latitude" ? 1 : 0;
+            acc.location.coordinates[idx] = parseValue(element, "double");
             return acc;
           }
           return {
@@ -94,12 +97,20 @@ async function build() {
     // this option prevents additional documents from being inserted if one fails
     const options = { ordered: true };
 
-    /// I used this to validate the single line insertion
-    // console.log(results[0]);
-    // const result = await collection
-    //   .insertOne(results[0], options)
-    //   .catch((err) => console.log(JSON.stringify(err, null, 2)));
-    // console.log(result);
+    // // I used this to validate the single line insertion
+    // let count = 0;
+    // for (let rs of results) {
+    //   const result = await collection
+    //     .insertOne(rs, options)
+    //     .catch((err) => {
+    //       console.log(rs);
+    //       console.log(JSON.stringify(err, null, 2));
+    //       // throw err;
+    //       count++;
+    //     });
+    //   console.log(result);
+    // }
+    // console.log(count);
 
     const result = await collection.insertMany(results, options);
     console.log(`${result.insertedCount} documents were inserted`);
@@ -109,6 +120,9 @@ async function build() {
     iresult = await collection.createIndex({ date_inscribed: 1 });
     console.log(`Index created: ${iresult}`);
     iresult = await collection.createIndex({ country_name: 1 });
+    console.log(`Index created: ${iresult}`);
+
+    iresult = await collection.createIndex({ "location": "2dsphere" });
     console.log(`Index created: ${iresult}`);
 
   } finally {

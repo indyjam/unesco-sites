@@ -17,26 +17,24 @@ The main goals are:
 ## Control variables
 
 Rename `template.env` file into`.env` and replace the entries with your settings(MongDB and GeApify credentials mainly).
-If you set the flag `FORCE_RECREATE_COLLECTION="true"`, running `populateMongoDb.js` over an existing collection, will clear the existing collection and recreate it instead of giving error.
+If you set the flag `FORCE_RECREATE_COLLECTION="true"`, running `bin/populateMongoDb.js` over an existing collection, will clear the existing collection and recreate it instead of giving error.
 
 ## How to populate the database
 
 run:
 
-- `node populateMongoDb.js`
+- `node bin/populateMongoDb.js`
 
 ## How to run the server with autorestart on change
 
-The package uses `nodemon` for handling the autorestarts; just run:.
+The package uses `nodemon` for handling the autorestarts; just run:
 
 - `npm run dev`
 
 ## Next steps
 
-- add indexes
-- use proper geospatial query to get sites close to a set of coordinates
 - add a search index over name, short_description, date_inscribed, country_name, region
 
 ## Test
 
-Use the included postman collection to test the APIs.
+Use the included postman collection in the `test` directory to test the APIs.

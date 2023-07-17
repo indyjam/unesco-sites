@@ -70,8 +70,8 @@ class UnescoSitesConnection {
   async groupByDanger() {
     let collection = await this.collection();
     const pipeline = [
-        // { $group: { _id: "$danger" } },
-        { $group: { _id: "$danger", sites: { $push: "$name" } } },
+      // { $group: { _id: "$danger" } },
+      { $group: { _id: "$danger", sites: { $push: "$name" } } },
     ];
     const aggCursor = collection.aggregate(pipeline);
     let res = [];
@@ -120,6 +120,27 @@ class UnescoSitesConnection {
       //   projection: { _id: 0, short_description: 1 },
     };
     let res = await collection.find(query, options).toArray();
+    console.log(res);
+    return res;
+  }
+
+  async getNearCoordinatesKm(latitude, longitude, radius) {
+    let collection = await this.collection();
+    const options = {
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: radius * 1000,
+        },
+      },
+    }
+    console.log("coordinates", JSON.stringify(options));
+    let res = await collection
+      .find(options)
+      .toArray();
     console.log(res);
     return res;
   }
