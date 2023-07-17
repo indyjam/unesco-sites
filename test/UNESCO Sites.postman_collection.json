@@ -157,6 +157,39 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "getNearCoordinatesKm",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4111/getNearCoordinatesKm?latitude=51.21709661403662&longitude=6.7782883744862374&radius=100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4111",
+					"path": [
+						"getNearCoordinatesKm"
+					],
+					"query": [
+						{
+							"key": "latitude",
+							"value": "51.21709661403662"
+						},
+						{
+							"key": "longitude",
+							"value": "6.7782883744862374"
+						},
+						{
+							"key": "radius",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

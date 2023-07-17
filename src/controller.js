@@ -3,6 +3,11 @@
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
+// TODO
+// - add indexes
+// - add search index
+// - add geostuff
+
 /******************************************************************************\
 |* This class contains everything is needed to access the database/collection *|
 |* Far from being perfect, is an hint of how I would approach things normally *|
@@ -15,14 +20,17 @@ class UnescoSitesConnection {
     const cluster = process.env.MONGODB_CLUSTER;
     const database = process.env.MONGODB_DATABASE;
     let uri = `mongodb+srv://${username}:${password}@${cluster}/?retryWrites=true&w=majority`;
-    this.client = new MongoClient(uri);
+    this.client = new MongoClient(uri, {
+      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 5000,
+    });
     this.database = this.client.db(database);
     this.collectionName = process.env.MONGODB_COLLECTION;
     this.collectionInstance = null;
   }
 
   /* create and returns collections */
-  async createCollection(recreate = false) {
+  async createCollection(recreate = false, schema = null) {
     if (recreate) {
       await this.database
         .collection(this.collectionName)
@@ -30,9 +38,16 @@ class UnescoSitesConnection {
         .then(() => console.log("Found Collection, delete & recreate"))
         .catch((err) => console.log("Collection not present, creating it!"));
     }
+    let options = schema
+      ? {
+          validator: { $jsonSchema: schema },
+        }
+      : {};
     this.collectionInstance = await this.database.createCollection(
-      this.collectionName
+      this.collectionName,
+      options
     );
+    console.log("Collection created!");
     return this.collectionInstance;
   }
 
@@ -55,8 +70,8 @@ class UnescoSitesConnection {
   async groupByDanger() {
     let collection = await this.collection();
     const pipeline = [
-      //   { $group: { _id: "$danger" } },
-      { $group: { _id: "$danger", sites: { $push: "$Name" } } },
+      // { $group: { _id: "$danger" } },
+      { $group: { _id: "$danger", sites: { $push: "$name" } } },
     ];
     const aggCursor = collection.aggregate(pipeline);
     let res = [];
@@ -70,7 +85,7 @@ class UnescoSitesConnection {
   /* get short_description related to given name */
   async getShortDescription(name) {
     let collection = await this.collection();
-    let query = { Name: name };
+    let query = { name: name };
     const options = {
       projection: { _id: 0, short_description: 1 },
     };
@@ -84,7 +99,7 @@ class UnescoSitesConnection {
   async getByInscriptionRange(startRange, endRange) {
     let collection = await this.collection();
     let query = {
-      date_inscribed: { $gt: `${startRange}`, $lt: `${endRange}` },
+      date_inscribed: { $gt: startRange, $lt: endRange },
     };
     const options = {
       sort: { date_inscribed: 1 },
@@ -99,12 +114,33 @@ class UnescoSitesConnection {
   async getCountrySites(countryName) {
     let collection = await this.collection();
     let query = {
-      "Country name": countryName,
+      country_name: countryName,
     };
     const options = {
       //   projection: { _id: 0, short_description: 1 },
     };
     let res = await collection.find(query, options).toArray();
+    console.log(res);
+    return res;
+  }
+
+  async getNearCoordinatesKm(latitude, longitude, radius) {
+    let collection = await this.collection();
+    const options = {
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: radius * 1000,
+        },
+      },
+    }
+    console.log("coordinates", JSON.stringify(options));
+    let res = await collection
+      .find(options)
+      .toArray();
     console.log(res);
     return res;
   }
