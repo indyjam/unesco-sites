@@ -81,7 +81,6 @@ module.exports = function (app) {
     } else {
       try {
         let country = await utils.geoFindByCoordinates(latitude, longitude);
-        console.log("AAAAA", country);
         let value = await connection.getCountrySites(country);
         res.send(value);
       } catch (err) {
