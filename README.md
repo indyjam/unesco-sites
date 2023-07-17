@@ -11,7 +11,6 @@ The main goals are:
   - Get all the UNESCO sites for a specific date_inscribed range
   - Write an API endpoint to get the UNESCO sites by country using Geoapify
   - (NEW) Write an API endpoint to get the UNESCO sites around a given set of coordinates using Geoapify
-  - (NEW) Write an API endpoint to get the UNESCO sites by pertinence using a search index
   - Finally, create a health check endpoint
 
 ## Control variables
@@ -31,10 +30,3 @@ The package uses `nodemon` for handling the autorestarts; just run:
 
 - `npm run dev`
 
-## Next steps
-
-- add a search index over name, short_description, date_inscribed, country_name, region
-
-## Test
-
-Use the included postman collection in the `test` directory to test the APIs.
